@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
+import { PackageSearch, Search } from "lucide-react";
 import { useStore, OrderStatus } from "@/lib/store";
 
-const LABELS: Record<OrderStatus, { fr: string; ar: string; color: string }> = {
+export const LABELS: Record<OrderStatus, { fr: string; ar: string; color: string }> = {
   new: { fr: "Nouvelle", ar: "جديدة", color: "bg-yellow-500/20 text-yellow-300" },
   confirmed: { fr: "Confirmée", ar: "مؤكدة", color: "bg-blue-500/20 text-blue-300" },
   shipped: { fr: "Expédiée", ar: "مشحونة", color: "bg-purple-500/20 text-purple-300" },
@@ -17,9 +18,14 @@ export default function Track() {
   const list = q ? orders.filter((o) => (o.id + o.phone).toLowerCase().includes(q.toLowerCase())) : orders;
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="font-lux text-3xl font-bold">{t("Suivi commande", "تتبع الطلب")}</h1>
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("ID (EV-123456) ou téléphone…", "رقم الطلب أو الهاتف…")}
-        className="mt-4 w-full bg-[#141414] border border-neutral-700 rounded-full px-5 py-3 min-h-[52px] outline-none focus:border-[#c9a24b]" />
+      <h1 className="font-lux text-3xl font-bold inline-flex items-center gap-2">
+        <PackageSearch size={26} className="text-[#c9a24b]" /> {t("Suivi commande", "تتبع الطلب")}
+      </h1>
+      <div className="relative mt-4">
+        <Search size={17} className="absolute start-4 top-1/2 -translate-y-1/2 text-neutral-500" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("ID (EV-123456) ou téléphone…", "رقم الطلب أو الهاتف…")}
+          className="w-full bg-[#141414] border border-neutral-700 rounded-full ps-11 pe-5 py-3 min-h-[52px] outline-none focus:border-[#c9a24b]" />
+      </div>
       <div className="mt-5 space-y-3">
         {list.map((o) => (
           <div key={o.id} className="card p-4">
@@ -37,5 +43,3 @@ export default function Track() {
     </div>
   );
 }
-
-export { LABELS };

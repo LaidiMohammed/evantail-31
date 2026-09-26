@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { PRODUCTS, Product } from "@/data/catalog";
 
 export type Lang = "fr" | "ar";
 export type CartItem = { slug: string; ml: number; qty: number; price: number; name: string };
@@ -20,6 +21,8 @@ export type Order = {
   date: string;
 };
 
+export type Promo = { code: string; pct: number; active: boolean };
+
 type StoreCtx = {
   lang: Lang;
   setLang: (l: Lang) => void;
@@ -35,9 +38,28 @@ type StoreCtx = {
   orders: Order[];
   placeOrder: (o: Omit<Order, "id" | "date" | "status">) => Order;
   updateStatus: (id: string, s: OrderStatus) => void;
+  deleteOrder: (id: string) => void;
+  clearOrders: () => void;
+  products: Product[];
+  addProduct: (p: Product) => void;
+  updateProduct: (slug: string, p: Product) => void;
+  deleteProduct: (slug: string) => void;
+  resetProducts: () => void;
+  promos: Promo[];
+  addPromo: (p: Promo) => void;
+  togglePromo: (code: string) => void;
+  deletePromo: (code: string) => void;
 };
 
 const Ctx = createContext<StoreCtx | null>(null);
+
+function load<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw) as T;
+  } catch {}
+  return fallback;
+}
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Lang>("fr");
@@ -45,26 +67,29 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+  const [promos, setPromos] = useState<Promo[]>([{ code: "EVANT20", pct: 20, active: true }]);
 
   useEffect(() => {
-    try {
-      const l = localStorage.getItem("ev-lang") as Lang | null;
-      if (l) setLang(l);
-      setCart(JSON.parse(localStorage.getItem("ev-cart") || "[]"));
-      setWishlist(JSON.parse(localStorage.getItem("ev-wish") || "[]"));
-      setOrders(JSON.parse(localStorage.getItem("ev-orders") || "[]"));
-    } catch {}
+    setLang((load("ev-lang", "fr") as Lang) === "ar" ? "ar" : "fr");
+    setCart(load<CartItem[]>("ev-cart", []));
+    setWishlist(load<string[]>("ev-wish", []));
+    setOrders(load<Order[]>("ev-orders", []));
+    setProducts(load<Product[]>("ev-products", PRODUCTS));
+    setPromos(load<Promo[]>("ev-promos", [{ code: "EVANT20", pct: 20, active: true }]));
   }, []);
 
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    localStorage.setItem("ev-lang", lang);
+    try { localStorage.setItem("ev-lang", lang); } catch {}
   }, [lang]);
 
-  useEffect(() => { localStorage.setItem("ev-cart", JSON.stringify(cart)); }, [cart]);
-  useEffect(() => { localStorage.setItem("ev-wish", JSON.stringify(wishlist)); }, [wishlist]);
-  useEffect(() => { localStorage.setItem("ev-orders", JSON.stringify(orders)); }, [orders]);
+  useEffect(() => { try { localStorage.setItem("ev-cart", JSON.stringify(cart)); } catch {} }, [cart]);
+  useEffect(() => { try { localStorage.setItem("ev-wish", JSON.stringify(wishlist)); } catch {} }, [wishlist]);
+  useEffect(() => { try { localStorage.setItem("ev-orders", JSON.stringify(orders)); } catch {} }, [orders]);
+  useEffect(() => { try { localStorage.setItem("ev-products", JSON.stringify(products)); } catch {} }, [products]);
+  useEffect(() => { try { localStorage.setItem("ev-promos", JSON.stringify(promos)); } catch {} }, [promos]);
 
   const t = (fr: string, ar: string) => (lang === "ar" ? ar : fr);
 
@@ -93,10 +118,28 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   };
   const updateStatus = (id: string, s: OrderStatus) =>
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: s } : o)));
+  const deleteOrder = (id: string) => setOrders((prev) => prev.filter((o) => o.id !== id));
+  const clearOrders = () => setOrders([]);
+
+  const addProduct = (p: Product) => setProducts((prev) => [p, ...prev]);
+  const updateProduct = (slug: string, p: Product) =>
+    setProducts((prev) => prev.map((x) => (x.slug === slug ? p : x)));
+  const deleteProduct = (slug: string) => setProducts((prev) => prev.filter((x) => x.slug !== slug));
+  const resetProducts = () => setProducts(PRODUCTS);
+
+  const addPromo = (p: Promo) => setPromos((prev) => [p, ...prev.filter((x) => x.code !== p.code)]);
+  const togglePromo = (code: string) =>
+    setPromos((prev) => prev.map((x) => (x.code === code ? { ...x, active: !x.active } : x)));
+  const deletePromo = (code: string) => setPromos((prev) => prev.filter((x) => x.code !== code));
 
   const v = useMemo(
-    () => ({ lang, setLang, t, cart, addToCart, removeFromCart, clearCart, cartOpen, setCartOpen, wishlist, toggleWish, orders, placeOrder, updateStatus }),
-    [lang, cart, cartOpen, wishlist, orders]
+    () => ({
+      lang, setLang, t, cart, addToCart, removeFromCart, clearCart, cartOpen, setCartOpen,
+      wishlist, toggleWish, orders, placeOrder, updateStatus, deleteOrder, clearOrders,
+      products, addProduct, updateProduct, deleteProduct, resetProducts,
+      promos, addPromo, togglePromo, deletePromo,
+    }),
+    [lang, cart, cartOpen, wishlist, orders, products, promos]
   );
   return <Ctx.Provider value={v}>{children}</Ctx.Provider>;
 }

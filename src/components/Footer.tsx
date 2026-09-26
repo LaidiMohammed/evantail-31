@@ -1,4 +1,5 @@
 "use client";
+import { BadgeCheck, Banknote, Clock, ExternalLink, MapPin, Music2, Phone, Truck } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { STORE } from "@/data/catalog";
 
@@ -14,8 +15,12 @@ export default function Footer() {
           </div>
           <p className="text-sm text-neutral-400">{t("Parfums originaux & تقسيم العطور الأصلية — Oran. TikTok: @evantail.31", "عطور أصلية وتقسيم العطور — وهران. تيك توك: @evantail.31")}</p>
           <div className="mt-3 flex gap-2">
-            <a href={STORE.tiktok} target="_blank" className="px-4 py-2 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] text-sm">TikTok ↗</a>
-            <a href="https://maps.google.com/?q=Akid+Lotfi+Oran" target="_blank" className="px-4 py-2 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] text-sm">Maps ↗</a>
+            <a href={STORE.tiktok} target="_blank" className="px-4 py-2 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] text-sm inline-flex items-center gap-1.5">
+              <Music2 size={14} /> TikTok <ExternalLink size={12} />
+            </a>
+            <a href="https://maps.google.com/?q=Akid+Lotfi+Oran" target="_blank" className="px-4 py-2 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] text-sm inline-flex items-center gap-1.5">
+              <MapPin size={14} /> Maps <ExternalLink size={12} />
+            </a>
           </div>
         </div>
         <div>
@@ -30,18 +35,29 @@ export default function Footer() {
         <div>
           <h4 className="font-bold mb-3 text-[#e8cf8f]">{t("Contact", "اتصل بنا")}</h4>
           <ul className="space-y-2 text-sm">
-            <li><a href="tel:0699440352" className="text-neutral-200 font-bold" dir="ltr">📞 0699 44 03 52</a></li>
-            <li><a href="tel:0771094515" className="text-neutral-200 font-bold" dir="ltr">📞 0771 09 45 15</a></li>
-            <li className="text-neutral-400">📍 {t("Oran, Akid Lotfi, derrière la mairie", "وهران العقيد لطفي خلف البلدية")}</li>
+            <li>
+              <a href="tel:0699440352" className="text-neutral-200 font-bold inline-flex items-center gap-2" dir="ltr">
+                <Phone size={14} className="text-[#c9a24b]" /> 0699 44 03 52
+              </a>
+            </li>
+            <li>
+              <a href="tel:0771094515" className="text-neutral-200 font-bold inline-flex items-center gap-2" dir="ltr">
+                <Phone size={14} className="text-[#c9a24b]" /> 0771 09 45 15
+              </a>
+            </li>
+            <li className="text-neutral-400 inline-flex items-start gap-1.5">
+              <MapPin size={14} className="mt-0.5 shrink-0" />
+              {t("Oran, Akid Lotfi, derrière la mairie", "وهران العقيد لطفي خلف البلدية")}
+            </li>
           </ul>
         </div>
         <div>
           <h4 className="font-bold mb-3 text-[#e8cf8f]">{t("Infos", "معلومات")}</h4>
           <ul className="space-y-2 text-sm text-neutral-400">
-            <li>✓ {t("Paiement à la livraison", "الدفع عند الاستلام")}</li>
-            <li>✓ {t("Livraison 58 wilayas", "توصيل 58 ولاية")}</li>
-            <li>✓ {t("100% Original", "أصلي 100%")}</li>
-            <li>{t("Ouvert 7j/7 • 10h–20h", "مفتوح 7/7 • 10-20")}</li>
+            <li className="inline-flex items-center gap-1.5"><Banknote size={14} className="text-[#c9a24b]" /> {t("Paiement à la livraison", "الدفع عند الاستلام")}</li>
+            <li className="inline-flex items-center gap-1.5"><Truck size={14} className="text-[#c9a24b]" /> {t("Livraison 58 wilayas", "توصيل 58 ولاية")}</li>
+            <li className="inline-flex items-center gap-1.5"><BadgeCheck size={14} className="text-[#c9a24b]" /> {t("100% Original", "أصلي 100%")}</li>
+            <li className="inline-flex items-center gap-1.5"><Clock size={14} className="text-[#c9a24b]" /> {t("Ouvert 7j/7 • 10h–20h", "مفتوح 7/7 • 10-20")}</li>
           </ul>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { Heart, Plus, Star } from "lucide-react";
 import { Product } from "@/data/catalog";
 import { useStore } from "@/lib/store";
 
@@ -22,8 +23,8 @@ export default function ProductCard({ p }: { p: Product }) {
           </span>
         )}
         <button onClick={() => toggleWish(p.slug)} aria-label="wishlist"
-          className={`absolute top-2 end-2 w-9 h-9 rounded-full flex items-center justify-center font-bold ${wished ? "bg-[#c9a24b] text-black" : "bg-black/60 text-white"}`}>
-          {wished ? "♥" : "♡"}
+          className={`absolute top-2 end-2 w-9 h-9 rounded-full flex items-center justify-center ${wished ? "bg-[#c9a24b] text-black" : "bg-black/60 text-white"}`}>
+          <Heart size={17} fill={wished ? "currentColor" : "none"} />
         </button>
       </div>
       <div className="p-3 sm:p-4 flex flex-col gap-2 flex-1">
@@ -43,11 +44,13 @@ export default function ProductCard({ p }: { p: Product }) {
         <div className="mt-auto flex items-center justify-between pt-1">
           <div>
             <div className="text-lg font-extrabold text-[#e8cf8f]">{v.price.toLocaleString()} DA</div>
-            <div className="text-[11px] text-neutral-500">★ {p.rating} • {p.sold}+ {t("vendus", "مبيع")}</div>
+            <div className="text-[11px] text-neutral-500 inline-flex items-center gap-1">
+              <Star size={11} className="text-[#c9a24b]" fill="currentColor" /> {p.rating} • {p.sold}+ {t("vendus", "مبيع")}
+            </div>
           </div>
           <button onClick={() => { addToCart({ slug: p.slug, ml: v.ml, qty: 1, price: v.price, name: `${p.brand} ${lang === "ar" ? p.name.ar : p.name.fr}` }); setCartOpen(true); }}
-            className="gold-btn px-4 py-2.5 rounded-full text-sm min-h-[44px]">
-            {t("+ Panier", "+ سلة")}
+            className="gold-btn px-4 py-2.5 rounded-full text-sm min-h-[44px] inline-flex items-center gap-1.5">
+            <Plus size={16} strokeWidth={3} /> {t("Panier", "سلة")}
           </button>
         </div>
       </div>
